@@ -23,7 +23,7 @@ func Res(msg string, title string) {
 
 }
 
-func Draw() {
+func ShitCode() {
 	err := ui.Main(func() {
 		//RootElems
 		boxROOT := ui.NewVerticalBox()

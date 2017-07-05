@@ -4,5 +4,5 @@ import (
 )
 
 func main() {
-	gui.Draw()
+	gui.ShitCode()
 }
