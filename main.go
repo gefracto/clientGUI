@@ -1,8 +1,9 @@
 package main
+
 import (
-	"github.com/clientGUI/gui"
+	"github.com/clientGUI/client"
 )
 
 func main() {
-	gui.ShitCode()
+	client.ShitCode()
 }
