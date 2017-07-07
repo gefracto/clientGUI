@@ -2,10 +2,12 @@ package client
 
 import (
 	"bytes"
+	"encoding/json"
+	"github.com/andlabs/ui"
+	"github.com/clientGUI/src/rules"
 	"io/ioutil"
 	"net/http"
-
-	"github.com/andlabs/ui"
+	"strconv"
 )
 
 func Res(msg string, title string) {
@@ -56,16 +58,27 @@ func task1() *ui.Group {
 	boxT1.Append(btnT1, true)
 
 	btnT1.OnClicked(func(*ui.Button) {
-		w := widthT1.Text()
-		h := heightT1.Text()
-		s := symbolT1.Text()
-
-		body := []byte("{\"width\":" + w + ",\"height\":" + h + ",\"symbol\":\"" + s + "\"}")
-		resp, _ := http.Post("http://localhost:1111/task/1", "application/json", bytes.NewBuffer(body))
-		r, _ := ioutil.ReadAll(resp.Body)
-
-		Res(resp.Status+".\nResult1: \n---------------------\n"+string(r), "Task1")
-
+		var d rules.T1
+		var err error
+		if d.Width, err = strconv.Atoi(widthT1.Text()); err != nil {
+			return
+		}
+		if d.Height, err = strconv.Atoi(heightT1.Text()); err != nil {
+			return
+		}
+		d.Symbol = symbolT1.Text()
+		if d.Check() {
+			var body []byte
+			body, _ = json.Marshal(d)
+			if resp, err := http.Post("http://localhost:1111/task/1", "application/json", bytes.NewBuffer(body)); err != nil {
+				Res("Reason: ", error.Error(err))
+			} else {
+				r, _ := ioutil.ReadAll(resp.Body)
+				Res("Result1: \n---------------------\n"+string(r), "Task1")
+			}
+		} else {
+			Res("Reason: Значения не прошли валидацию", "Ошибка!")
+		}
 	})
 
 	return task1
@@ -110,12 +123,37 @@ func task2() *ui.Group {
 	boxT2.Append(btnT2, true)
 
 	btnT2.OnClicked(func(*ui.Button) {
+		var d [2]rules.T2
+		var err error
 		w1, h1 := widthE1T2.Text(), heightE1T2.Text()
 		w2, h2 := widthE2T2.Text(), heightE2T2.Text()
-		body := []byte("[{\"width\":" + w1 + ",\"height\":" + h1 + "},{\"width\":" + w2 + ",\"height\":" + h2 + "}]")
-		resp, _ := http.Post("http://localhost:1111/task/2", "application/json", bytes.NewBuffer(body))
-		r, _ := ioutil.ReadAll(resp.Body)
-		Res(resp.Status+".\nResult2: \n---------------------\n"+string(r), "Task2")
+
+		if d[0].Width, err = strconv.Atoi(w1); err != nil {
+			return
+		}
+		if d[0].Height, err = strconv.Atoi(h1); err != nil {
+			return
+		}
+		if d[1].Width, err = strconv.Atoi(w2); err != nil {
+			return
+		}
+		if d[1].Height, err = strconv.Atoi(h2); err != nil {
+			return
+		}
+		if d[0].Check() && d[1].Check() {
+
+			body, _ := json.Marshal(d)
+
+			if resp, err := http.Post("http://localhost:1111/task/2", "application/json", bytes.NewBuffer(body)); err != nil {
+				Res("Reason: ", error.Error(err))
+			} else {
+
+				r, _ := ioutil.ReadAll(resp.Body)
+				Res("Result2: \n---------------------\n"+string(r), "Task2")
+			}
+		} else {
+			Res("Reason: Значения не прошли валидацию", "Ошибка!")
+		}
 	})
 
 	return task2
