@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/clientGUI/client"
+	"github.com/clientGUI/src/view/client"
 )
 
 func main() {
-	client.ShitCode()
+	client.ShowClient()
 }
